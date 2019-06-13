@@ -21,14 +21,11 @@ export class ParticipantEventsComponent implements OnInit {
 
   ngOnInit() {
     this.participant$ = this.store$.pipe(
-      select(ParticipantStoreSelectors.selectAllParticipants),
-      filter(s => s.length > 0),
-      map((entities: Participant[]) => {
-        const entity = entities.find(s => s.slug === this.route.parent.parent.snapshot.params.slug);
+      select(ParticipantStoreSelectors.selectAllParticipantEntities),
+      map(entities => {
+        const entity = entities[this.route.parent.parent.snapshot.data.participant.id];
         if (entity) {
-          const participant = (entity instanceof Participant)
-            ? entity :  new Participant().deserialize(entity);
-          return participant;
+          return (entity instanceof Participant) ? entity :  new Participant().deserialize(entity);
         }
         return undefined;
       }));

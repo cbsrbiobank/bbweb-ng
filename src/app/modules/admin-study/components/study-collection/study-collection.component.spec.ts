@@ -25,12 +25,10 @@ describe('StudyCollectionComponent', () => {
   let router: Router;
   let store: Store<StudyStoreReducer.State>;
   const mockActivatedRoute = new MockActivatedRoute();
-  let factory: Factory;
-  let routerListener;
+  let routerListener: any;
+  const factory = new Factory();
 
   beforeEach(async(() => {
-    factory = new Factory();
-
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -38,7 +36,6 @@ describe('StudyCollectionComponent', () => {
         NgbModule,
         RouterTestingModule,
         StoreModule.forRoot({
-          'spinner': SpinnerStoreReducer.reducer,
           'study': StudyStoreReducer.reducer,
           'event-type': EventTypeStoreReducer.reducer
         }),

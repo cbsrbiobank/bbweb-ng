@@ -1,13 +1,11 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { PagedReplyInfo, SearchParams } from '@app/domain';
-import { CollectionEventType, Study } from '@app/domain/studies';
-import { RootStoreState, EventStoreSelectors, EventStoreActions } from '@app/root-store';
+import { CollectionEvent, Participant } from '@app/domain/participants';
+import { VisitNumberFilter } from '@app/domain/search-filters';
+import { EventStoreActions, EventStoreSelectors, RootStoreState } from '@app/root-store';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { filter, map, takeUntil, tap } from 'rxjs/operators';
-import { Participant, CollectionEvent } from '@app/domain/participants';
-import { VisitNumberFilter } from '@app/domain/search-filters';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-event-add-select',
