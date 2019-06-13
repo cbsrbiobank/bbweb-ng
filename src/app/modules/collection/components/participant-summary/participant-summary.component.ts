@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Participant } from '@app/domain/participants';
 import { ParticipantStoreSelectors, RootStoreState, StudyStoreActions, StudyStoreSelectors, ParticipantStoreActions } from '@app/root-store';
 import { select, Store, createSelector } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, shareReplay, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { Dictionary } from '@ngrx/entity';
 import { Study } from '@app/domain/studies';
@@ -40,7 +40,7 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
   annotationModalOptions: ModalInputTextOptions = {};
 
   private newUniqueId: string;
-  private entities: EntityData;
+  private entitiesSubject = new BehaviorSubject(null);
   private updatedMessage$ = new Subject<string>();
   private unsubscribe$ = new Subject<void>();
 
@@ -72,7 +72,9 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
     this.entities$ = this.store$.pipe(
       select(entitiesSelector),
       tap(entities => {
-        this.entities = entities;
+        if (entities === undefined) { return; }
+
+        debugger;
         if ((entities.study === undefined) || (entities.study.timeAdded === undefined)) {
           this.store$.dispatch(StudyStoreActions.getStudyRequest({ slug: entities.participant.study.slug }));
         }
@@ -80,7 +82,8 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe$),
       shareReplay());
 
-    this.participant$ = this.entities$.pipe(map(entities => entities.participant));
+    this.entities$.pipe(takeUntil(this.unsubscribe$)).subscribe(this.entitiesSubject);
+    this.participant$ = this.entities$.pipe(map(entities => entities ? entities.participant : undefined));
 
     this.entities$.pipe(
       withLatestFrom(this.updatedMessage$),
@@ -133,11 +136,12 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
   }
 
   updateUniqueId() {
+    const participant = this.entitiesSubject.value.participant;
     this.modalService.open(this.updateUniqueIdModal, { size: 'lg' }).result
       .then(value => {
         this.newUniqueId = value;
         this.store$.dispatch(ParticipantStoreActions.updateParticipantRequest({
-          participant: this.entities.participant,
+          participant,
           attributeName: 'uniqueId',
           value
         }));
@@ -149,13 +153,14 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
   }
 
   updateAnnotation(annotation: Annotation) {
+    const participant = this.entitiesSubject.value.participant;
     this.annotationToEdit = annotation;
 
     this.modalService.open(this.updateAnnotationModal, { size: 'lg' }).result
       .then(value => {
         const updatedAnnotation = value;
         this.store$.dispatch(ParticipantStoreActions.updateParticipantRequest({
-          participant: this.entities.participant,
+          participant,
           attributeName: 'addAnnotation',
           value: updatedAnnotation.serverAnnotation()
         }));
