@@ -75,4 +75,22 @@ describe('HeaderComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 
+  it('clicking navbar collapse button shows the navbar when hidden',() => {
+    let buttons = fixture.debugElement.queryAll(By.css('.navbar-toggler-right'));
+    expect(buttons.length).toBeGreaterThan(0);
+    component.isCollapsed = true;
+    buttons[0].nativeElement.click();
+    fixture.detectChanges();
+    expect(component.isCollapsed).toBeFalsy();
+  });
+
+
+  it('clicking navbar collapse button hides the navbar when shown',() => {
+    let buttons = fixture.debugElement.queryAll(By.css('.navbar-toggler-right'));
+    expect(buttons.length).toBeGreaterThan(0);
+    component.isCollapsed = false;
+    buttons[0].nativeElement.click();
+    fixture.detectChanges();
+    expect(component.isCollapsed).toBeTruthy();
+  });
 });
