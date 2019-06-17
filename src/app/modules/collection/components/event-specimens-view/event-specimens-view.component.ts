@@ -8,6 +8,8 @@ import { Observable, Subject } from 'rxjs';
 import { shareReplay, takeUntil, filter, map, tap } from 'rxjs/operators';
 import { SpecimenViewModalComponent } from '../specimen-view-modal/specimen-view-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {Sort} from '@angular/material/sort';
+
 
 @Component({
   selector: 'app-event-specimens-view',
@@ -29,7 +31,7 @@ export class EventSpecimensViewComponent implements OnInit, OnChanges {
   tableDataLoading = false;
   currentPage = 1;
   specimensLimit = 5;
-  sortField = 'inventoryId'
+  sortField: string;
 
   private updatedMessage$ = new Subject<string>();
   private unsubscribe$ = new Subject<void>();
@@ -38,6 +40,7 @@ export class EventSpecimensViewComponent implements OnInit, OnChanges {
               private modalService: NgbModal) { }
 
   ngOnInit() {
+    this.sortField = 'inventoryId';
     this.applySearchParams();
 
     this.specimensPageInfo$ = this.store$.pipe(
@@ -93,6 +96,7 @@ export class EventSpecimensViewComponent implements OnInit, OnChanges {
   }
 
   private applySearchParams() {
+    console.log('sort ', this.sortField);
     this.tableDataLoading = true;
     this.store$.dispatch(SpecimenStoreActions.searchSpecimensRequest({
       event: this.event,
@@ -103,4 +107,86 @@ export class EventSpecimensViewComponent implements OnInit, OnChanges {
     }));
   }
 
+
+  sortData(sort: Sort) {
+
+    if (!sort.active) {
+      return;
+    }
+    if(sort.direction === '')
+    {
+      this.sortField = '';
+      this.currentPage = 1;
+      this.applySearchParams();
+      return;
+    }
+
+    switch (sort.active) {
+      case 'inventoryIdHeader': return this.sortByInventoryId(sort);
+      // case 'amountHeader': return this.sortByAmount(sort);
+      // case 'typeHeader': return this.sortByType(sort);
+      case 'timeCreatedHeader': return this.sortByTimeCreated(sort);
+      // case 'locationHeader': return this.sortByLocation(sort);
+      default: return 0;
+    }
+
+  }
+
+
+  sortByInventoryId(sort: Sort) {
+    
+
+    if (sort.direction === 'desc') {
+      this.sortField = '-inventoryId';
+    } else {
+      this.sortField = 'inventoryId';
+    }
+    this.currentPage = 1;
+    this.applySearchParams();
+  }
+
+  sortByAmount(sort: Sort) {
+    if (sort.direction === 'desc') {
+      this.sortField = '-amount';
+    } else {
+      this.sortField = 'amount';
+    }
+    this.currentPage = 1;
+    this.applySearchParams();
+  }
+
+  sortByType(sort: Sort) {
+    if (sort.direction === 'desc') {
+      this.sortField = '-type';
+    } else {
+      this.sortField = 'type';
+    }
+    this.currentPage = 1;
+    this.applySearchParams();
+  }
+
+  sortByTimeCreated(sort: Sort) {
+    if (sort.direction === 'desc') {
+      this.sortField = '-timeCreated';
+    } else {
+      this.sortField = 'timeCreated';
+    }
+    this.currentPage = 1;
+    this.applySearchParams();
+  }
+
+  sortByLocation(sort: Sort) {
+    if (sort.direction === 'desc') {
+      this.sortField = '-location';
+    } else {
+      this.sortField = 'location';
+    }
+    this.currentPage = 1;
+    this.applySearchParams();
+  }
+
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

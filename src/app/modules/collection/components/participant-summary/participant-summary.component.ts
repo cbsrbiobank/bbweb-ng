@@ -73,8 +73,6 @@ export class ParticipantSummaryComponent implements OnInit, OnDestroy {
       select(entitiesSelector),
       tap(entities => {
         if (entities === undefined) { return; }
-
-        debugger;
         if ((entities.study === undefined) || (entities.study.timeAdded === undefined)) {
           this.store$.dispatch(StudyStoreActions.getStudyRequest({ slug: entities.participant.study.slug }));
         }

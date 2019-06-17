@@ -21,6 +21,7 @@ import { EventAddSelectComponent } from './components/event-add-select/event-add
 import { EventViewComponent } from './components/event-view/event-view.component';
 import { EventSpecimensViewComponent } from './components/event-specimens-view/event-specimens-view.component';
 import { SpecimenViewModalComponent } from './components/specimen-view-modal/specimen-view-modal.component';
+import { MatSortModule, MatTableModule } from '@angular/material';
 
 @NgModule({
   imports: [
@@ -34,7 +35,9 @@ import { SpecimenViewModalComponent } from './components/specimen-view-modal/spe
     FontAwesomeModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
-    NgbModule
+    NgbModule,
+    MatTableModule,
+    MatSortModule
   ],
   declarations: [
     CollectionPageComponent,
